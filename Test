@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Workshop Attendance</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 400px; margin: 40px auto; padding: 20px; }
+    input, select, button { width: 100%; padding: 12px; margin: 8px 0; font-size: 16px; box-sizing: border-box; }
+    button { background: #2563eb; color: white; border: none; border-radius: 6px; cursor: pointer; }
+    button:hover { background: #1d4ed8; }
+    .msg { padding: 10px; margin-top: 10px; border-radius: 6px; }
+    .success { background: #d1fae5; color: #065f46; }
+    .error { background: #fee2e2; color: #991b1b; }
+  </style>
+</head>
+<body>
+  <h2>Workshop Attendance</h2>
+  <input id="name" placeholder="Full Name" required>
+  <input id="email" type="email" placeholder="Email" required>
+  <select id="workshop">
+    <option>Workshop A</option>
+    <option>Workshop B</option>
+  </select>
+  <button onclick="record('in')">✅ Sign In</button>
+  <button onclick="record('out')">🚪 Sign Out</button>
+  <div id="msg"></div>
+
+  <script>
+    // Replace with your Google Apps Script Web App URL (see below)
+    const API_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
+
+    async function record(action) {
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const workshop = document.getElementById('workshop').value;
+      const msg = document.getElementById('msg');
+
+      if (!name || !email) {
+        msg.className = 'msg error';
+        msg.textContent = 'Please enter your name and email.';
+        return;
+      }
+
+      try {
+        await fetch(API_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, workshop, action })
+        });
+        msg.className = 'msg success';
+        msg.textContent = `Signed ${action === 'in' ? 'in' : 'out'} successfully at ${new Date().toLocaleTimeString()}`;
+      } catch (e) {
+        msg.className = 'msg error';
+        msg.textContent = 'Error: ' + e.message;
+      }
+    }
+  </script>
+</body>
+</html>
